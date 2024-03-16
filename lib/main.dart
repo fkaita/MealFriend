@@ -26,26 +26,25 @@ enum TimerState { initial, started, paused }
 
 class _TimerPageState extends State<TimerPage> {
   int seconds = 0;
-  int _currentIndex = 0;
-  final int maxSeconds = 600;
+  int _imageIndex = 0;
+  int maxSeconds = 60 * 20; // 20 minutes by default
   TimerState timerState = TimerState.initial;
-  Timer? _timer;
-  Timer? _imageTimer;
-  bool _isPaused = false;
+  Timer? _timer; // Timer for counting seconds
+  Timer? _imageTimer; // Timer for animation
 
   // Make list of svg images
-  List<String> _svgAssets = [
+  final List<String> _svgAssets = [
     'assets/images/eatingFace1.svg',
     'assets/images/eatingFace2.svg',
     'assets/images/eatingFace3.svg',
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    startImageTimer();
-    startTimer();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   startImageTimer();
+  //   startTimer();
+  // }
 
   void startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -56,13 +55,14 @@ class _TimerPageState extends State<TimerPage> {
     setState(() {
       timerState = TimerState.started;
     });
+    startImageTimer();
   }
 
   void startImageTimer() {
     // For animation
     final random = Random();
-    final meanSeconds = 1;
-    final stdDevSeconds = 0.5;
+    const meanSeconds = 1;
+    const stdDevSeconds = 0.5;
 
     // Generate a random duration with normal distribution
     Duration randomDuration = Duration(
@@ -70,9 +70,9 @@ class _TimerPageState extends State<TimerPage> {
             ((random.nextDouble() * stdDevSeconds + meanSeconds) * 1000)
                 .round());
     _imageTimer = Timer(randomDuration, () {
-      if (!_isPaused) {
+      if (seconds / maxSeconds < 1.0) {
         setState(() {
-          _currentIndex = (_currentIndex + 1) % _svgAssets.length;
+          _imageIndex = (_imageIndex + 1) % _svgAssets.length;
         });
       }
       startImageTimer(); // Start timer again for the next image change
@@ -92,23 +92,71 @@ class _TimerPageState extends State<TimerPage> {
     _imageTimer?.cancel();
     setState(() {
       seconds = 0;
-      _currentIndex = 0;
+      _imageIndex = 0;
       timerState = TimerState.initial;
-      // Go to next stage here
+      // TODO: Go to next stage here -> Record time
     });
+  }
+
+  Future<void> _showMyDialog() async {
+    final result = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Select time for a meal'),
+          children: <Widget>[
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, "15");
+              },
+              child: const Text('15 minutes'),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, "20");
+              },
+              child: const Text('20 minutes'),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, "25");
+              },
+              child: const Text('25 minutes'),
+            ),
+          ],
+        );
+      },
+    );
+    // Change target time length
+    if (result != null) {
+      setState(() {
+        maxSeconds = int.parse(result) * 60;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+        body: SafeArea(
+      child: Center(
         child: Column(
           children: [
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              IconButton(
+                icon: const Icon(Icons.av_timer_outlined),
+                iconSize: 24,
+                padding: const EdgeInsets.all(8.0),
+                onPressed: () {
+                  _showMyDialog();
+                },
+              )
+            ]),
             Expanded(
               child: SvgPicture.asset(
-                _svgAssets[_currentIndex],
-                width: 300, // Adjust width and height as needed
-                height: 300,
+                _svgAssets[_imageIndex],
+                width: 200, // Adjust width and height as needed
+                height: 200,
               ),
             ),
             LinearProgressIndicator(
@@ -129,7 +177,6 @@ class _TimerPageState extends State<TimerPage> {
                       pauseTimer();
                     } else {
                       startTimer();
-                      startImageTimer();
                     }
                   },
                   child: Text(timerState == TimerState.started
@@ -145,11 +192,11 @@ class _TimerPageState extends State<TimerPage> {
                     child: const Text('Finish'))
             ]),
             const SizedBox(
-              height: 48,
+              height: 24,
             )
           ],
         ),
       ),
-    );
+    ));
   }
 }
