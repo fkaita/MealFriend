@@ -5,19 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: TimerPage(),
     );
   }
 }
 
 class TimerPage extends StatefulWidget {
+  const TimerPage({super.key});
+
   @override
   _TimerPageState createState() => _TimerPageState();
 }
@@ -138,65 +142,68 @@ class _TimerPageState extends State<TimerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(),
         body: SafeArea(
-      child: Center(
-        child: Column(
-          children: [
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              IconButton(
-                icon: const Icon(Icons.av_timer_outlined),
-                iconSize: 24,
-                padding: const EdgeInsets.all(8.0),
-                onPressed: () {
-                  _showMyDialog();
-                },
-              )
-            ]),
-            Expanded(
-              child: SvgPicture.asset(
-                _svgAssets[_imageIndex],
-                width: 200, // Adjust width and height as needed
-                height: 200,
-              ),
-            ),
-            LinearProgressIndicator(
-              value: seconds / maxSeconds,
-              minHeight: 12,
-            ),
-            const SizedBox(
-              height: 24,
-            ),
-            Text(
-              '$seconds',
-              style: const TextStyle(fontSize: 24),
-            ),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-              ElevatedButton(
-                  onPressed: () {
-                    if (timerState == TimerState.started) {
-                      pauseTimer();
-                    } else {
-                      startTimer();
-                    }
-                  },
-                  child: Text(timerState == TimerState.started
-                      ? 'Pause'
-                      : timerState == TimerState.paused
-                          ? 'Restart'
-                          : 'Start')),
-              if (timerState != TimerState.initial)
-                ElevatedButton(
+          child: Center(
+            child: Column(
+              children: [
+                Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  IconButton(
+                    icon: const Icon(Icons.av_timer_outlined),
+                    iconSize: 24,
+                    padding: const EdgeInsets.all(8.0),
                     onPressed: () {
-                      finishTimer();
+                      _showMyDialog();
                     },
-                    child: const Text('Finish'))
-            ]),
-            const SizedBox(
-              height: 24,
-            )
-          ],
-        ),
-      ),
-    ));
+                  )
+                ]),
+                Expanded(
+                  child: SvgPicture.asset(
+                    _svgAssets[_imageIndex],
+                    width: 200, // Adjust width and height as needed
+                    height: 200,
+                  ),
+                ),
+                LinearProgressIndicator(
+                  value: seconds / maxSeconds,
+                  minHeight: 12,
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Text(
+                  '$seconds',
+                  style: const TextStyle(fontSize: 24),
+                ),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {
+                            if (timerState == TimerState.started) {
+                              pauseTimer();
+                            } else {
+                              startTimer();
+                            }
+                          },
+                          child: Text(timerState == TimerState.started
+                              ? 'Pause'
+                              : timerState == TimerState.paused
+                                  ? 'Restart'
+                                  : 'Start')),
+                      if (timerState != TimerState.initial)
+                        ElevatedButton(
+                            onPressed: () {
+                              finishTimer();
+                            },
+                            child: const Text('Finish'))
+                    ]),
+                const SizedBox(
+                  height: 24,
+                )
+              ],
+            ),
+          ),
+        ));
   }
 }
