@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mealfriend/screens/record_page.dart';
+import 'package:mealfriend/models/meal_time_data.dart';
+import 'package:mealfriend/db/database_helper.dart';
 
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key});
@@ -20,6 +22,7 @@ class _TimerPageState extends State<TimerPage> {
   TimerState timerState = TimerState.initial;
   Timer? _timer; // Timer for counting seconds
   Timer? _imageTimer; // Timer for animation
+  late DatabaseHelper dbHelper;
 
   // Make list of svg images
   final List<String> _svgAssets = [
@@ -85,14 +88,51 @@ class _TimerPageState extends State<TimerPage> {
   }
 
   void finishTimer() {
+    // Stop timer
     _timer?.cancel();
     _imageTimer?.cancel();
-    setState(() {
-      seconds = 0;
-      _imageIndex = 0;
-      timerState = TimerState.initial;
-      // TODO: ask user to save or discard the time and insert to db
-      // TODO: Go to next stage here -> Record time
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Save Time'),
+          content: Text('Do you want to save this time?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Discard'),
+              onPressed: () {
+                // Code to discard the timer
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Save'),
+              onPressed: () {
+                // Save time to db
+                dbHelper = DatabaseHelper();
+                final mealTimeData = MealTimeData(
+                  createdTime: DateTime.now(),
+                  mealTimeInSecond: seconds,
+                );
+                dbHelper.insertMealTimeData(mealTimeData);
+                print(seconds.toString() + " second is saved");
+                Navigator.of(context).pop();
+                navigateToRecordPage();
+              },
+            ),
+          ],
+        );
+      },
+    ).then((_) {
+      // Reset timer
+      setState(() {
+        seconds = 0;
+        _imageIndex = 0;
+        timerState = TimerState.initial;
+        // TODO: ask user to save or discard the time and insert to db
+        // TODO: Go to next stage here -> Record time
+      });
     });
   }
 
