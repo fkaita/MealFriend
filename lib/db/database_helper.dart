@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:mealfriend/model/meal_time_data.dart';
+import 'package:mealfriend/models/meal_time_data.dart';
 
 class DatabaseHelper {
   static DatabaseHelper? _databaseHelper;

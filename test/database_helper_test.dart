@@ -2,8 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:mealfriend/db/DatabaseHelper.dart';
-import 'package:mealfriend/model/meal_time_data.dart';
+import 'package:mealfriend/db/database_helper.dart';
+import 'package:mealfriend/models/meal_time_data.dart';
 
 void main() {
   // Initialize FFI
@@ -15,7 +15,7 @@ void main() {
   group('DatabaseHelper Tests', () {
     late DatabaseHelper dbHelper;
 
-    setUp(() {
+    setUp(() async {
       dbHelper = DatabaseHelper();
     });
 
