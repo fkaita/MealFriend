@@ -70,4 +70,14 @@ class DatabaseHelper {
     return await db.delete(MealTimeData.tableName,
         where: '${MealTimeData.colId} = ?', whereArgs: [id]);
   }
+
+  Future<void> deleteDB() async {
+    final db = await this.database;
+    await db.close();
+
+    String path =
+        join(await getDatabasesPath(), '${MealTimeData.tableName}.db');
+
+    await deleteDatabase(path);
+  }
 }

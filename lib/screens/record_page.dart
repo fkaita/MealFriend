@@ -1,10 +1,11 @@
 import 'dart:math';
-// import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mealfriend/db/database_helper.dart';
 import 'package:mealfriend/models/meal_time_data.dart';
 import 'package:mealfriend/screens/timer_page.dart';
-import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:fl_chart/fl_chart.dart';
+// import 'package:intl/intl.dart';
 
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
@@ -17,31 +18,48 @@ class RecordPageState extends State<RecordPage> {
   Map<String, String> avgMonthlyMealTime = {};
   List<dynamic> itemsForDisplay = [];
   int maxMealTimeInSecond = 60;
-  // late DatabaseHelper dbHelper;
+  late DatabaseHelper dbHelper;
 
   @override
   void initState() {
     super.initState();
-    // dbHelper = DatabaseHelper();
+    dbHelper = DatabaseHelper();
     fetchMealTimeDataList();
   }
 
   void fetchMealTimeDataList() async {
-    // final list = await dbHelper.getMealTimeDataList();
+    // final mealTimeDataList = await dbHelper.getMealTimeDataList();
     // setState(() {
     //   mealTimeDataList = list;
     // });
 
-    // Create dummy data
-    final random = Random();
-    List<MealTimeData> mealTimeDataList = List<MealTimeData>.generate(
-      50,
-      (index) => MealTimeData(
-        createdTime: DateTime.now().subtract(Duration(days: index * 2)),
-        mealTimeInSecond: (random.nextDouble() * 3 + 10)
-            .round(), // 10 minutes increment for each dummy data
-      ),
-    );
+    // Get shared pref to check dummy data was already exist or not
+    final prefs = await SharedPreferences.getInstance();
+    final dummyDataCreated = prefs.getBool('dummyDataCreated') ?? false;
+
+    // Create dummy data if it doesn't exist
+    if (!dummyDataCreated) {
+      final random = Random();
+      List<MealTimeData> dummyDataList = List<MealTimeData>.generate(
+        50,
+        (index) => MealTimeData(
+          createdTime: DateTime.now().subtract(Duration(days: index * 2)),
+          mealTimeInSecond: (random.nextDouble() * 3 + 10)
+              .round(), // 10 minutes increment for each dummy data
+        ),
+      );
+
+      // insert dummy data into db
+      for (var item in dummyDataList) {
+        await dbHelper.insertMealTimeData(item);
+      }
+
+      // Set the flag to indicate that the dummy data has been created
+      await prefs.setBool('dummyDataCreated', true);
+    }
+
+    // get data from db
+    final mealTimeDataList = await dbHelper.getMealTimeDataList();
 
     // Finding the max mealTimeInSecond for given list
     maxMealTimeInSecond = mealTimeDataList
