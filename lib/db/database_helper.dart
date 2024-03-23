@@ -71,6 +71,14 @@ class DatabaseHelper {
         where: '${MealTimeData.colId} = ?', whereArgs: [id]);
   }
 
+  Future<void> deleteAllItems() async {
+    // Assuming you have a Database instance called `db`
+    final db = await this
+        .database; // Replace `database` with your Database instance variable
+    await db
+        .delete(MealTimeData.tableName); // This deletes all rows in `MyTable`
+  }
+
   Future<void> deleteDB() async {
     final db = await this.database;
     await db.close();

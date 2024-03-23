@@ -28,36 +28,35 @@ class RecordPageState extends State<RecordPage> {
   }
 
   void fetchMealTimeDataList() async {
-    // final mealTimeDataList = await dbHelper.getMealTimeDataList();
-    // setState(() {
-    //   mealTimeDataList = list;
-    // });
+    // Operations for dummy data
 
-    // Get shared pref to check dummy data was already exist or not
-    final prefs = await SharedPreferences.getInstance();
-    final dummyDataCreated = prefs.getBool('dummyDataCreated') ?? false;
+    // // // Get shared pref to check dummy data was already exist or not
+    // final prefs = await SharedPreferences.getInstance();
+    // final dummyDataCreated = prefs.getBool('dummyDataCreated') ?? false;
 
-    // Create dummy data if it doesn't exist
-    if (!dummyDataCreated) {
-      final random = Random();
-      List<MealTimeData> dummyDataList = List<MealTimeData>.generate(
-        50,
-        (index) => MealTimeData(
-          createdTime: DateTime.now().subtract(Duration(days: index * 2)),
-          mealTimeInSecond: (random.nextDouble() * 3 + 10)
-              .round(), // 10 minutes increment for each dummy data
-        ),
-      );
+    // // Create dummy data if it doesn't exist
+    // if (!dummyDataCreated) {
 
-      // insert dummy data into db
-      for (var item in dummyDataList) {
-        await dbHelper.insertMealTimeData(item);
-      }
+    //   // Set the flag to indicate that the dummy data has been created
+    //   await prefs.setBool('dummyDataCreated', true);
+    // }
 
-      // Set the flag to indicate that the dummy data has been created
-      await prefs.setBool('dummyDataCreated', true);
+    final random = Random();
+    List<MealTimeData> dummyDataList = List<MealTimeData>.generate(
+      50,
+      (index) => MealTimeData(
+        createdTime: DateTime.now().subtract(Duration(days: index * 2)),
+        mealTimeInSecond: (random.nextDouble() * 180 + 600)
+            .round(), // 10 minutes increment for each dummy data
+      ),
+    );
+
+    // insert dummy data into db
+    for (var item in dummyDataList) {
+      await dbHelper.insertMealTimeData(item);
     }
 
+    // From here, normal operations without dummy data
     // get data from db
     final mealTimeDataList = await dbHelper.getMealTimeDataList();
 
@@ -86,7 +85,7 @@ class RecordPageState extends State<RecordPage> {
                   0, (sum, item) => sum + item.mealTimeInSecond) /
               itemsInLastMonth.length;
           avgMonthlyMealTime[lastMonthYear] =
-              averageMealTimeInSecond.toStringAsFixed(1);
+              (averageMealTimeInSecond / 60).toStringAsFixed(1);
           itemsInLastMonth = [];
         }
 
@@ -104,7 +103,7 @@ class RecordPageState extends State<RecordPage> {
         itemsInLastMonth.fold(0, (sum, item) => sum + item.mealTimeInSecond) /
             itemsInLastMonth.length;
     avgMonthlyMealTime[lastMonthYear] =
-        averageMealTimeInSecond.toStringAsFixed(1);
+        (averageMealTimeInSecond / 60).toStringAsFixed(1);
 
     // Set data for display
     setState(() {
@@ -119,6 +118,7 @@ class RecordPageState extends State<RecordPage> {
     // Remove dummy data
     setState(() {
       itemsForDisplay.clear();
+      dbHelper.deleteAllItems();
     });
 
     Navigator.push(
@@ -143,6 +143,7 @@ class RecordPageState extends State<RecordPage> {
           var item = itemsForDisplay[index];
           if (item is Map) {
             return ListTile(
+              // Display month and average meal time for the month
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -152,10 +153,12 @@ class RecordPageState extends State<RecordPage> {
               ),
             );
           } else {
+            // Display horizontal bar graph for each meal time
             return ListTile(
               visualDensity: VisualDensity(horizontal: 0, vertical: -2),
               title: Row(
                 children: [
+                  // Display day of the month
                   Container(
                     width: 30,
                     padding: EdgeInsets.only(right: 5),
@@ -164,6 +167,7 @@ class RecordPageState extends State<RecordPage> {
                       textAlign: TextAlign.right,
                     ),
                   ),
+                  // Display horizontal bar graph
                   ClipRRect(
                       borderRadius: BorderRadius.circular(4.0),
                       child: Container(
@@ -173,10 +177,12 @@ class RecordPageState extends State<RecordPage> {
                               0.6 *
                               MediaQuery.of(context).size.width,
                           color: Colors.blue)),
+                  // Display meal time in minutes
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(left: 8.0),
-                      child: Text(item.mealTimeInSecond.toString()),
+                      child:
+                          Text((item.mealTimeInSecond / 60).toStringAsFixed(1)),
                     ),
                   ),
                 ],
