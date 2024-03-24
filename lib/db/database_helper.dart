@@ -49,7 +49,11 @@ class DatabaseHelper {
 
   Future<List<MealTimeData>> getMealTimeDataList() async {
     Database db = await this.database;
-    List<Map<String, dynamic>> maps = await db.query(MealTimeData.tableName);
+    List<Map<String, dynamic>> maps = await db.query(
+      MealTimeData.tableName,
+      orderBy:
+          '${MealTimeData.colCreatedTime} DESC', // Sorting by 'createdTime' in descending order
+    );
     return List.generate(maps.length, (i) {
       return MealTimeData(
         id: maps[i][MealTimeData.colId],
