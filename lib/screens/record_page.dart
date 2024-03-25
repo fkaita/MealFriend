@@ -28,6 +28,11 @@ class RecordPageState extends State<RecordPage> {
   }
 
   void fetchMealTimeDataList() async {
+    // initialize the variables
+    avgMonthlyMealTime = {};
+    itemsForDisplay = [];
+    maxMealTimeInSecond = 60;
+
     // // Operations for dummy data
     // // Create dummy data
     // final random = Random();
@@ -153,6 +158,37 @@ class RecordPageState extends State<RecordPage> {
                   // Display horizontal bar graph for each meal time
                   return ListTile(
                     visualDensity: VisualDensity(horizontal: 0, vertical: -2),
+                    // ask user to delete data when long press
+                    onLongPress: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Confirm Delete'),
+                            content: Text(
+                                'Are you sure you want to delete this item?'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('Cancel'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text('Delete'),
+                                onPressed: () {
+                                  // Code to delete the corresponding data
+                                  dbHelper.deleteMealTimeData(item.id);
+                                  // Fetch the data again
+                                  fetchMealTimeDataList();
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                     title: Row(
                       children: [
                         // Display day of the month
