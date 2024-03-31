@@ -1,11 +1,7 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:mealfriend/db/database_helper.dart';
 import 'package:mealfriend/models/meal_time_data.dart';
 import 'package:mealfriend/screens/timer_page.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:fl_chart/fl_chart.dart';
-// import 'package:intl/intl.dart';
 
 class RecordPage extends StatefulWidget {
   const RecordPage({super.key});
@@ -44,7 +40,6 @@ class RecordPageState extends State<RecordPage> {
     //         .round(), // 10 minutes increment for each dummy data
     //   ),
     // );
-
     // // insert dummy data into db
     // for (var item in dummyDataList) {
     //   await dbHelper.insertMealTimeData(item);
@@ -229,138 +224,3 @@ class RecordPageState extends State<RecordPage> {
     );
   }
 }
-
-// class _BarChart extends StatelessWidget {
-//   final List<MealTimeData> mealTimeDataList;
-
-//   _BarChart({required this.mealTimeDataList});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BarChart(
-//       BarChartData(
-//         barTouchData: barTouchData,
-//         titlesData: titlesData,
-//         borderData: borderData,
-//         barGroups: barGroups,
-//         gridData: const FlGridData(show: false),
-//         alignment: BarChartAlignment.spaceAround,
-//         maxY: 20,
-//       ),
-//     );
-//   }
-
-//   BarTouchData get barTouchData => BarTouchData(
-//         enabled: false,
-//         touchTooltipData: BarTouchTooltipData(
-//           tooltipBgColor: Colors.transparent,
-//           tooltipPadding: EdgeInsets.zero,
-//           tooltipMargin: 8,
-//           getTooltipItem: (
-//             BarChartGroupData group,
-//             int groupIndex,
-//             BarChartRodData rod,
-//             int rodIndex,
-//           ) {
-//             return BarTooltipItem(
-//               rod.toY.round().toString(),
-//               const TextStyle(
-//                 color: Colors.blue,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             );
-//           },
-//         ),
-//       );
-
-//   Widget getTitles(double value, TitleMeta meta) {
-//     final style = TextStyle(
-//       color: Colors.blue,
-//       fontWeight: FontWeight.bold,
-//       fontSize: 14,
-//     );
-//     String text;
-//     switch (value.toInt()) {
-//       case 0:
-//         text = 'Mn';
-//         break;
-//       case 1:
-//         text = 'Te';
-//         break;
-//       case 2:
-//         text = 'Wd';
-//         break;
-//       case 3:
-//         text = 'Tu';
-//         break;
-//       case 4:
-//         text = 'Fr';
-//         break;
-//       case 5:
-//         text = 'St';
-//         break;
-//       case 6:
-//         text = 'Sn';
-//         break;
-//       default:
-//         text = '';
-//         break;
-//     }
-//     return SideTitleWidget(
-//       axisSide: meta.axisSide,
-//       space: 4,
-//       child: Text(text, style: style),
-//     );
-//   }
-
-//   FlTitlesData get titlesData => FlTitlesData(
-//         show: true,
-//         bottomTitles: AxisTitles(
-//           sideTitles: SideTitles(
-//             showTitles: true,
-//             reservedSize: 30,
-//             getTitlesWidget: getTitles,
-//           ),
-//         ),
-//         leftTitles: const AxisTitles(
-//           sideTitles: SideTitles(showTitles: false),
-//         ),
-//         topTitles: const AxisTitles(
-//           sideTitles: SideTitles(showTitles: false),
-//         ),
-//         rightTitles: const AxisTitles(
-//           sideTitles: SideTitles(showTitles: false),
-//         ),
-//       );
-
-//   FlBorderData get borderData => FlBorderData(
-//         show: false,
-//       );
-
-//   LinearGradient get _barsGradient => LinearGradient(
-//         colors: [
-//           Colors.blueGrey,
-//           Colors.blue,
-//         ],
-//         begin: Alignment.bottomCenter,
-//         end: Alignment.topCenter,
-//       );
-
-//   List<BarChartGroupData> get barGroups {
-//     return mealTimeDataList.asMap().entries.map((entry) {
-//       final createdTime = entry.value.createdTime;
-//       final mealTimeInSecond = entry.value.mealTimeInSecond;
-//       int dayOfWeek = createdTime.weekday;
-//       return BarChartGroupData(
-//         x: dayOfWeek,
-//         barRods: [
-//           BarChartRodData(
-//             toY: mealTimeInSecond.toDouble(),
-//             gradient: _barsGradient,
-//           )
-//         ],
-//         showingTooltipIndicators: [0],
-//       );
-//     }).toList();
-//   }
-// }

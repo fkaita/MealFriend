@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mealfriend/screens/record_page.dart';
 import 'package:mealfriend/models/meal_time_data.dart';
 import 'package:mealfriend/db/database_helper.dart';
+// TODO: Integration with watch: watch_connectivity: ^0.1.6
 
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key});
