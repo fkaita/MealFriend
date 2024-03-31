@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mealfriend/screens/record_page.dart';
 import 'package:mealfriend/models/meal_time_data.dart';
 import 'package:mealfriend/db/database_helper.dart';
+import 'package:watch_connectivity/watch_connectivity.dart';
 // TODO: Integration with watch: watch_connectivity: ^0.1.6
 
 class TimerPage extends StatefulWidget {
@@ -32,6 +33,19 @@ class _TimerPageState extends State<TimerPage> {
     'assets/images/eatingFace3.svg',
   ];
 
+  // Set Connection with watch
+  final _watch = WatchConnectivity();
+
+  Future<void> sendMessage(String txt) async {
+    var _reachable = await _watch.isReachable;
+    if (_reachable) {
+      print("Reachable!");
+      await _watch.sendMessage({"data": txt});
+    } else {
+      print("Watch is not reachable");
+    }
+  }
+
   // Function to navigate to RecordPage
   void navigateToRecordPage() {
     Navigator.push(
@@ -40,14 +54,18 @@ class _TimerPageState extends State<TimerPage> {
     );
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   startImageTimer();
-  //   startTimer();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _watch.messageStream
+        .listen((e) => setState(() => print('Received message: $e')));
+
+    _watch.contextStream
+        .listen((e) => setState(() => print('Received context: $e')));
+  }
 
   void startTimer() {
+    sendMessage("Hello World!");
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       setState(() {
         seconds++;
@@ -131,8 +149,6 @@ class _TimerPageState extends State<TimerPage> {
         seconds = 0;
         _imageIndex = 0;
         timerState = TimerState.initial;
-        // TODO: ask user to save or discard the time and insert to db
-        // TODO: Go to next stage here -> Record time
       });
     });
   }
