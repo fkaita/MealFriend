@@ -6,7 +6,7 @@ import 'package:mealfriend/screens/record_page.dart';
 import 'package:mealfriend/models/meal_time_data.dart';
 import 'package:mealfriend/db/database_helper.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
-// TODO: Integration with watch: watch_connectivity: ^0.1.6
+// TODO: Build connection between Android and watch
 
 class TimerPage extends StatefulWidget {
   const TimerPage({super.key});
