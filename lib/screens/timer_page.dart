@@ -60,6 +60,29 @@ class _TimerPageState extends State<TimerPage> {
     _watch.messageStream
         .listen((e) => setState(() => print('Received message: $e')));
 
+    // Save data to database
+    _watch.messageStream.listen((message) {
+      if (message.containsKey('data')) {
+        print("contain key data");
+        List<String> dataParts = message['data'].split(',');
+        if (dataParts.length == 2) {
+          DateTime time = DateTime.parse(dataParts[0]);
+          int seconds = int.parse(dataParts[1]);
+          print('Received data: ${time.toString()}, $seconds');
+
+          // Save time to db
+          dbHelper = DatabaseHelper();
+          final mealTimeData = MealTimeData(
+            createdTime: time,
+            mealTimeInSecond: seconds,
+          );
+          dbHelper.insertMealTimeData(mealTimeData);
+
+          print('Saved data: ${message['data']}');
+        }
+      }
+    });
+
     _watch.contextStream
         .listen((e) => setState(() => print('Received context: $e')));
   }
