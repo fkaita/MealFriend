@@ -39,7 +39,6 @@ class _TimerPageState extends State<TimerPage> {
   Future<void> sendMessage(String txt) async {
     var _reachable = await _watch.isReachable;
     if (_reachable) {
-      print("Reachable!");
       await _watch.sendMessage({"data": txt});
     } else {
       print("Watch is not reachable");
@@ -59,6 +58,13 @@ class _TimerPageState extends State<TimerPage> {
     super.initState();
     _watch.messageStream
         .listen((e) => setState(() => print('Received message: $e')));
+
+    _watch.messageStream.listen((message) {
+      if (message.containsKey('status')) {
+        print(message['status']);
+        sendMessage("status received");
+      }
+    });
 
     // Save data to database
     _watch.messageStream.listen((message) {
